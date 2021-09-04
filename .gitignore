@@ -3,3 +3,5 @@
 erl_crash.dump
 *.ez
 /doc
+*.code-workspace
+.elixir_ls
