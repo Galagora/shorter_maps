@@ -169,9 +169,9 @@ defmodule ShorterMapsSpec do
         expect ~M{initial|a, b: d} |> to(eq %{a: 6, b: 7, c: 3})
       end
       it "can update a struct" do
-        old_struct = %Range{first: 1, last: 2}
+        old_struct = %Range{first: 1, last: 2, step: 1}
         last = 3
-        expect ~M{old_struct|last} |> to(eq %Range{first: 1, last: 3})
+        expect ~M{old_struct|last} |> to(eq %Range{first: 1, last: 3, step: 1})
       end
       defmodule TestStructForUpdate do
         defstruct [a: 1, b: 2, c: 3]
