@@ -35,10 +35,10 @@ defmodule ShorterKeywords do
   defp do_sigil_k("%" <> _rest, _line, ?s), do: raise(ArgumentError, "keyword lists can only consist of atom keys")
 
   defp do_sigil_k(raw_string, line, modifier) do
-    IO.puts("raw_string: #{raw_string}, line: #{line}, modifier: #{modifier}") # Debug
+    # IO.puts("raw_string: #{raw_string}, line: #{line}, modifier: #{modifier}") # Debug
     {:ok, keys_and_values} =  expand_variables(raw_string, modifier)
     final_string = "[#{keys_and_values}]"
-    IO.puts("#{raw_string} => #{final_string}") # Debug
+    # IO.puts("#{raw_string} => #{final_string}") # Debug
     Code.string_to_quoted!(final_string, file: __ENV__.file, line: line)
   end
 end
