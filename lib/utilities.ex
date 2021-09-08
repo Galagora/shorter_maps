@@ -29,6 +29,66 @@ defmodule ShorterMaps.Utilities do
     end
   end
 
+  @re_var_space_var "#{@re_varname}\s+#{@re_varname}"
+  @re_var_pipe_var "#{@re_varname}\s*\\|\s*#{@re_varname}"
+  @doc """
+  Classify the ~K string. ~K has 3 patterns:
+  - Create: `~K{foo}`, `~K{foo, bar}`
+  - Merge: `~K{kwl| foo}`, `~K{kwl| foo, bar}`
+  - Destructure: `~K{kwl foo}, `~K{kwl foo, bar}`
+
+  ## Parameeters:
+  - `string` The raw string passed to ~K
+
+  ## Returns:
+  - {:create, [var]} Create pattern
+  - {:merge, kwl, [var]} Merge pattern
+  - {:destructure, kwl, [var]} Destructure pattern
+  """
+  def classify_kwl_string(string) do
+    cond do
+      string =~ ~r/#{@re_var_pipe_var}/ ->
+        # merge
+        # IO.puts("merge => #{string}")
+        [kwl, rest] = String.split(string, "|", parts: 2)
+        vars = rest |> String.split(",") |> Enum.map(&(String.trim(&1)))
+        {:merge, kwl |> String.trim(), vars}
+
+      string =~ ~r/#{@re_var_space_var}/ ->
+        # destructure
+        # IO.puts("destructure => #{string}")
+        [kwl, rest] = String.split(string, " ", parts: 2)
+        vars = rest |> String.split(",") |> Enum.map(&(String.trim(&1)))
+        {:destructure, kwl |> String.trim(), vars}
+
+      true ->
+        # create
+        # IO.puts("create => #{string}")
+        vars = string |> String.split(",") |> Enum.map(&(String.trim(&1)))
+        {:create, vars}
+    end
+  end
+
+  @doc """
+  Expand variable list into a string of terms
+  ## Parameters
+  - `acc` The accumulated string
+  - `vars` The variable list: `["var1", "var2: term"]`
+  ## Returns
+  - String of expansions, e.g. "var1: var1, var2: term"
+  """
+  def expand_kwl_vars(vars,acc \\ "")
+  def expand_kwl_vars([], acc), do: acc
+  def expand_kwl_vars([var| rest], acc) do
+    var_expansion = case String.split(var, ":", parts: 2) do
+      [var, assignment] -> "#{var}: #{assignment |> String.trim()}"
+      [var] -> "#{var}: #{var}"
+    end
+    # IO.puts("var_expansion => #{var_expansion}")
+    expanded = "#{acc}#{var_expansion}, "
+    expand_kwl_vars(rest, expanded)
+  end
+
   @doc false
   # This works simply:  split the whole string on commas. check each entry to
   # see if it looks like a variable (with or without prefix) or zero-arity
@@ -85,7 +145,6 @@ defmodule ShorterMaps.Utilities do
       {:error, _} -> check_entry(entry, rest)
     end
   end
-
 
   @doc false
   def expand_variable(var, ?s) do
