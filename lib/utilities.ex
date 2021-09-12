@@ -41,9 +41,9 @@ defmodule ShorterMaps.Utilities do
   - `string` The raw string passed to ~K
 
   ## Returns:
-  - {:create, [var]} Create pattern
-  - {:merge, kwl, [var]} Merge pattern
-  - {:destructure, kwl, [var]} Destructure pattern
+  - {:create, [var]} Create pattern: `~K{foo}` => `{:create, ~w/foo/}`
+  - {:merge, kwl, [var]} Merge pattern: `~K{kwl| foo}` => `{:merge, "kwl", ~w/foo/}`
+  - {:destructure, kwl, [var]} Destructure pattern: `~K{kwl foo}` => `{:destructure, "kwl", ~w/foo/}`
   """
   def classify_kwl_string(string) do
     cond do
@@ -77,7 +77,7 @@ defmodule ShorterMaps.Utilities do
   ## Returns
   - String of expansions, e.g. "var1: var1, var2: term"
   """
-  def expand_kwl_vars(vars,acc \\ "")
+  def expand_kwl_vars(vars, acc \\ "")
   def expand_kwl_vars([], acc), do: acc
   def expand_kwl_vars([var| rest], acc) do
     var_expansion = case String.split(var, ":", parts: 2) do
