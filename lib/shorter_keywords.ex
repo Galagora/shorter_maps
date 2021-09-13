@@ -1,8 +1,7 @@
 defmodule ShorterKeywords do
-  @readme Path.join(__DIR__, "../README.md")
-  @external_resource @readme
-  {:ok, readme_contents} = File.read(@readme)
-  @moduledoc "#{readme_contents}"
+  @moduledoc """
+  ~K{} implementation
+  """
 
   import ShorterMaps.Utilities, only: [classify_kwl_string: 1, expand_kwl_vars: 1]
 
@@ -23,9 +22,7 @@ defmodule ShorterKeywords do
   defmacro sigil_K({:<<>>, [line: line], [string]}, modifiers) do
     do_sigil_k(string, line, modifier(modifiers))
   end
-  defmacro sigil_K({:<<>>, _, _}, _modifiers) do
-    raise ArgumentError, "interpolation is not supported with the ~K sigil"
-  end
+  defmacro sigil_K({:<<>>, _, _}, _modifiers), do: raise ArgumentError, "interpolation is not supported with the ~K sigil"
 
   @doc false
   defp do_sigil_k(raw_string, line, modifier)
@@ -53,24 +50,6 @@ defmodule ShorterKeywords do
     end
   end
 
-  # defp do_sigil_k(raw_string, line, ?p = modifier) do
-  #   IO.puts("raw_string: #{raw_string}, line: #{line}, modifier: #{modifier}") # Debug
-  #   {:ok, keys_and_values} = expand_variables(raw_string, modifier)
-  #   final_string = "[#{keys_and_values}]"
-  #   IO.puts("#{raw_string} => #{final_string}") # Debug
-  #   Code.string_to_quoted!(final_string, file: __ENV__.file, line: line)
-  # end
-
-  # defp do_sigil_k(raw_string, line, ?g = modifier) do
-  #   IO.puts("raw_string: #{raw_string}, line: #{line}, modifier: #{modifier}") # Debug
-  #   {:ok, keys_and_values} = expand_variables(raw_string, modifier)
-  #   final_string = "[#{keys_and_values}]"
-  #   IO.puts("#{raw_string} => #{final_string}") # Debug
-  #   Code.string_to_quoted!(final_string, file: __ENV__.file, line: line)
-  # end
-
-  def modifier([]), do: []
-  def modifier(_, _default) do
-    raise(ArgumentError, "No modifiers are supported")
-  end
+  @doc false
+  defp modifier([]), do: []
 end
