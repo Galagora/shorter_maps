@@ -19,8 +19,8 @@ defmodule ShorterKeywords do
 
   """
   defmacro sigil_K(term, modifiers)
-  defmacro sigil_K({:<<>>, [line: line], [string]}, modifiers) do
-    do_sigil_k(string, line, modifier(modifiers))
+  defmacro sigil_K({:<<>>, meta, [string]}, modifiers) do
+    do_sigil_k(string, meta[:line], modifier(modifiers))
   end
   defmacro sigil_K({:<<>>, _, _}, _modifiers), do: raise ArgumentError, "interpolation is not supported with the ~K sigil"
 
